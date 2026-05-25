@@ -1,0 +1,160 @@
+package com.moviebooking;
+
+public class Movie {
+
+    private String movieName;
+    private int availableSeats;
+    private double ticketPrice;
+
+    public Movie(String movieName, int availableSeats, double ticketPrice) {
+        this.movieName = movieName;
+        this.availableSeats = availableSeats;
+        this.ticketPrice = ticketPrice;
+    }
+
+    public String getMovieName() {
+        return movieName;
+    }
+
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+
+    public double getTicketPrice() {
+        return ticketPrice;
+    }
+
+    public void bookSeats(int seats) {
+        if (seats <= availableSeats) {
+            availableSeats -= seats;
+        } else {
+            System.out.println("Not enough seats available.");
+        }
+    }
+}
+package com.moviebooking;
+
+public class Ticket {
+
+    private String customerName;
+    private String movieName;
+    private int seatsBooked;
+    private double totalPrice;
+
+    public Ticket(String customerName, String movieName,
+                  int seatsBooked, double totalPrice) {
+
+        this.customerName = customerName;
+        this.movieName = movieName;
+        this.seatsBooked = seatsBooked;
+        this.totalPrice = totalPrice;
+    }
+
+    public void printTicket() {
+        System.out.println("\n===== MOVIE TICKET =====");
+        System.out.println("Customer : " + customerName);
+        System.out.println("Movie    : " + movieName);
+        System.out.println("Seats    : " + seatsBooked);
+        System.out.println("Total    : ₹" + totalPrice);
+        System.out.println("========================");
+    }
+}
+package com.moviebooking;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class BookingService {
+
+    private List<Movie> movies = new ArrayList<>();
+
+    public BookingService() {
+
+        movies.add(new Movie("Pushpa 2", 50, 250));
+        movies.add(new Movie("Kalki 2898 AD", 40, 300));
+        movies.add(new Movie("Devara", 60, 220));
+    }
+
+    public void displayMovies() {
+
+        System.out.println("\nAvailable Movies:");
+
+        for (int i = 0; i < movies.size(); i++) {
+
+            Movie movie = movies.get(i);
+
+            System.out.println((i + 1) + ". "
+                    + movie.getMovieName()
+                    + " | Seats: " + movie.getAvailableSeats()
+                    + " | Price: ₹" + movie.getTicketPrice());
+        }
+    }
+
+    public Ticket bookTicket(int movieChoice,
+                             String customerName,
+                             int seats) {
+
+        if (movieChoice < 1 || movieChoice > movies.size()) {
+            System.out.println("Invalid movie choice.");
+            return null;
+        }
+
+        Movie movie = movies.get(movieChoice - 1);
+
+        if (seats > movie.getAvailableSeats()) {
+            System.out.println("Seats not available.");
+            return null;
+        }
+
+        movie.bookSeats(seats);
+
+        double total = seats * movie.getTicketPrice();
+
+        return new Ticket(
+                customerName,
+                movie.getMovieName(),
+                seats,
+                total
+        );
+    }
+}
+package com.moviebooking;
+
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Scanner scanner = new Scanner(System.in);
+
+        BookingService bookingService = new BookingService();
+
+        System.out.println("===== MOVIE TICKET BOOKING =====");
+
+        bookingService.displayMovies();
+
+        System.out.print("\nEnter your name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Choose movie number: ");
+        int movieChoice = scanner.nextInt();
+
+        System.out.print("Number of seats: ");
+        int seats = scanner.nextInt();
+
+        Ticket ticket = bookingService.bookTicket(
+                movieChoice,
+                name,
+                seats
+        );
+
+        if (ticket != null) {
+            ticket.printTicket();
+        } else {
+            System.out.println("Booking failed.");
+        }
+
+        scanner.close();
+    }
+}
