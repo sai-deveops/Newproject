@@ -1,4 +1,3 @@
 from nginx
-copy code /usr/share/nginx/html/
+copy index.html /usr/share/nginx/html/
 copy . .
- 
