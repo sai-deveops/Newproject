@@ -1,160 +1,262 @@
-package com.moviebooking;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Movie Ticket Booking</title>
 
-public class Movie {
-
-    private String movieName;
-    private int availableSeats;
-    private double ticketPrice;
-
-    public Movie(String movieName, int availableSeats, double ticketPrice) {
-        this.movieName = movieName;
-        this.availableSeats = availableSeats;
-        this.ticketPrice = ticketPrice;
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: Arial, sans-serif;
     }
 
-    public String getMovieName() {
-        return movieName;
+    body{
+      background:#111827;
+      color:white;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      padding:20px;
     }
 
-    public int getAvailableSeats() {
-        return availableSeats;
+    .container{
+      width:900px;
+      background:#1f2937;
+      border-radius:15px;
+      padding:25px;
+      box-shadow:0 0 20px rgba(0,0,0,0.5);
     }
 
-    public double getTicketPrice() {
-        return ticketPrice;
+    h1{
+      text-align:center;
+      margin-bottom:20px;
+      color:#facc15;
     }
 
-    public void bookSeats(int seats) {
-        if (seats <= availableSeats) {
-            availableSeats -= seats;
-        } else {
-            System.out.println("Not enough seats available.");
-        }
-    }
-}
-package com.moviebooking;
-
-public class Ticket {
-
-    private String customerName;
-    private String movieName;
-    private int seatsBooked;
-    private double totalPrice;
-
-    public Ticket(String customerName, String movieName,
-                  int seatsBooked, double totalPrice) {
-
-        this.customerName = customerName;
-        this.movieName = movieName;
-        this.seatsBooked = seatsBooked;
-        this.totalPrice = totalPrice;
+    .movie-selection{
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:25px;
+      flex-wrap:wrap;
+      gap:15px;
     }
 
-    public void printTicket() {
-        System.out.println("\n===== MOVIE TICKET =====");
-        System.out.println("Customer : " + customerName);
-        System.out.println("Movie    : " + movieName);
-        System.out.println("Seats    : " + seatsBooked);
-        System.out.println("Total    : ₹" + totalPrice);
-        System.out.println("========================");
-    }
-}
-package com.moviebooking;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class BookingService {
-
-    private List<Movie> movies = new ArrayList<>();
-
-    public BookingService() {
-
-        movies.add(new Movie("Pushpa 2", 50, 250));
-        movies.add(new Movie("Kalki 2898 AD", 40, 300));
-        movies.add(new Movie("Devara", 60, 220));
+    select, button{
+      padding:10px 15px;
+      border:none;
+      border-radius:8px;
+      font-size:16px;
     }
 
-    public void displayMovies() {
-
-        System.out.println("\nAvailable Movies:");
-
-        for (int i = 0; i < movies.size(); i++) {
-
-            Movie movie = movies.get(i);
-
-            System.out.println((i + 1) + ". "
-                    + movie.getMovieName()
-                    + " | Seats: " + movie.getAvailableSeats()
-                    + " | Price: ₹" + movie.getTicketPrice());
-        }
+    select{
+      width:250px;
     }
 
-    public Ticket bookTicket(int movieChoice,
-                             String customerName,
-                             int seats) {
-
-        if (movieChoice < 1 || movieChoice > movies.size()) {
-            System.out.println("Invalid movie choice.");
-            return null;
-        }
-
-        Movie movie = movies.get(movieChoice - 1);
-
-        if (seats > movie.getAvailableSeats()) {
-            System.out.println("Seats not available.");
-            return null;
-        }
-
-        movie.bookSeats(seats);
-
-        double total = seats * movie.getTicketPrice();
-
-        return new Ticket(
-                customerName,
-                movie.getMovieName(),
-                seats,
-                total
-        );
+    .screen{
+      background:#e5e7eb;
+      height:70px;
+      border-radius:10px;
+      margin:20px 0 40px;
+      transform:perspective(600px) rotateX(-20deg);
+      box-shadow:0 5px 20px rgba(255,255,255,0.5);
     }
-}
-package com.moviebooking;
 
-import java.util.Scanner;
-
-public class Main {
-
-    public static void main(String[] args) {
-
-        Scanner scanner = new Scanner(System.in);
-
-        BookingService bookingService = new BookingService();
-
-        System.out.println("===== MOVIE TICKET BOOKING =====");
-
-        bookingService.displayMovies();
-
-        System.out.print("\nEnter your name: ");
-        String name = scanner.nextLine();
-
-        System.out.print("Choose movie number: ");
-        int movieChoice = scanner.nextInt();
-
-        System.out.print("Number of seats: ");
-        int seats = scanner.nextInt();
-
-        Ticket ticket = bookingService.bookTicket(
-                movieChoice,
-                name,
-                seats
-        );
-
-        if (ticket != null) {
-            ticket.printTicket();
-        } else {
-            System.out.println("Booking failed.");
-        }
-
-        scanner.close();
+    .seat-container{
+      display:grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap:12px;
+      justify-items:center;
     }
-}
+
+    .seat{
+      width:40px;
+      height:40px;
+      background:#374151;
+      border-radius:10px 10px 5px 5px;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .seat:hover{
+      transform:scale(1.1);
+    }
+
+    .seat.selected{
+      background:#22c55e;
+    }
+
+    .seat.occupied{
+      background:#ef4444;
+      cursor:not-allowed;
+    }
+
+    .legend{
+      display:flex;
+      justify-content:center;
+      gap:20px;
+      margin:25px 0;
+    }
+
+    .legend-item{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .box{
+      width:20px;
+      height:20px;
+      border-radius:5px;
+    }
+
+    .available{ background:#374151; }
+    .selected-box{ background:#22c55e; }
+    .occupied-box{ background:#ef4444; }
+
+    .summary{
+      text-align:center;
+      margin-top:20px;
+    }
+
+    .summary p{
+      margin:10px 0;
+      font-size:18px;
+    }
+
+    button{
+      background:#facc15;
+      color:#111827;
+      font-weight:bold;
+      cursor:pointer;
+      margin-top:15px;
+      transition:0.3s;
+    }
+
+    button:hover{
+      background:#fde047;
+    }
+
+    @media(max-width:700px){
+      .seat-container{
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>🎬 Movie Ticket Booking</h1>
+
+    <div class="movie-selection">
+      <select id="movie">
+        <option value="200">Avengers Endgame - ₹200</option>
+        <option value="180">Jawan - ₹180</option>
+        <option value="150">Leo - ₹150</option>
+        <option value="220">Kalki 2898 AD - ₹220</option>
+      </select>
+
+      <button onclick="bookTickets()">Book Now</button>
+    </div>
+
+    <div class="screen"></div>
+
+    <div class="seat-container" id="seatContainer"></div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="box available"></div>
+        <span>Available</span>
+      </div>
+
+      <div class="legend-item">
+        <div class="box selected-box"></div>
+        <span>Selected</span>
+      </div>
+
+      <div class="legend-item">
+        <div class="box occupied-box"></div>
+        <span>Occupied</span>
+      </div>
+    </div>
+
+    <div class="summary">
+      <p>Selected Seats: <span id="count">0</span></p>
+      <p>Total Price: ₹<span id="total">0</span></p>
+    </div>
+  </div>
+
+  <script>
+    const seatContainer = document.getElementById("seatContainer");
+    const count = document.getElementById("count");
+    const total = document.getElementById("total");
+    const movieSelect = document.getElementById("movie");
+
+    const totalSeats = 48;
+
+    // Create seats dynamically
+    for(let i = 0; i < totalSeats; i++) {
+      const seat = document.createElement("div");
+      seat.classList.add("seat");
+
+      // Random occupied seats
+      if(Math.random() < 0.2){
+        seat.classList.add("occupied");
+      }
+
+      seatContainer.appendChild(seat);
+    }
+
+    // Seat click event
+    seatContainer.addEventListener("click", (e) => {
+      if(
+        e.target.classList.contains("seat") &&
+        !e.target.classList.contains("occupied")
+      ){
+        e.target.classList.toggle("selected");
+        updateSummary();
+      }
+    });
+
+    // Update summary
+    function updateSummary(){
+      const selectedSeats =
+        document.querySelectorAll(".seat.selected");
+
+      const selectedCount = selectedSeats.length;
+      const ticketPrice = +movieSelect.value;
+
+      count.innerText = selectedCount;
+      total.innerText = selectedCount * ticketPrice;
+    }
+
+    // Movie change updates total
+    movieSelect.addEventListener("change", updateSummary);
+
+    // Booking function
+    function bookTickets(){
+      const selectedSeats =
+        document.querySelectorAll(".seat.selected");
+
+      if(selectedSeats.length === 0){
+        alert("Please select at least one seat.");
+        return;
+      }
+
+      selectedSeats.forEach(seat => {
+        seat.classList.remove("selected");
+        seat.classList.add("occupied");
+      });
+
+      alert("Tickets booked successfully 🎉");
+      updateSummary();
+    }
+  </script>
+
+</body>
+</html>
